@@ -1,6 +1,6 @@
 # fingerprintv2
 
-Transparent browser fingerprinting with exact identifiers and weighted, change-tolerant matching. Built for browser and FiveM NUI environments with zero runtime dependencies.
+Transparent browser fingerprinting with exact identifiers and weighted, change-tolerant matching. Built exclusively for web browsers with zero runtime dependencies.
 
 > A browser fingerprint is a probabilistic anti-abuse signal, not proof of a person's identity. Obtain appropriate consent and comply with privacy laws that apply to you.
 
@@ -59,33 +59,6 @@ compareSignatures(left, right, {
   threshold: 0.8,
   minimumComparableWeight: 30,
 })
-```
-
-## FiveM NUI
-
-The FiveM adapter preserves the payload shape used by the original NUI script. Sending is always explicit:
-
-```ts
-import FingerprintV2 from 'fingerprintv2'
-import { sendToFiveM } from 'fingerprintv2/fivem'
-
-const agent = await FingerprintV2.load()
-const result = await agent.get()
-await sendToFiveM(result, { endpoint: 'a2' })
-```
-
-The NUI callback receives:
-
-```json
-{
-  "fingerprint": {
-    "signature": {
-      "audioHash": "...",
-      "canvasHash": "...",
-      "webglRenderer": "..."
-    }
-  }
-}
 ```
 
 ## Signals
