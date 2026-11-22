@@ -1,8 +1,8 @@
-import { describe, expect, it } from 'vitest'
-import { compareSignatures } from '../src/match'
-import type { Signature } from '../src/types'
+import assert from 'node:assert/strict'
+import { describe, it } from 'node:test'
+import { compareSignatures } from '../dist/index.js'
 
-const base: Signature = {
+const base = {
   audioHash: { value: 'audio-a', weight: 25 },
   canvasHash: { value: 'canvas-a', weight: 25 },
   webglRenderer: { value: 'gpu-a', weight: 20 },
@@ -12,26 +12,28 @@ const base: Signature = {
 
 describe('compareSignatures', () => {
   it('recognizes identical signatures', () => {
-    expect(compareSignatures(base, structuredClone(base))).toMatchObject({ score: 1, decision: 'same' })
+    const match = compareSignatures(base, structuredClone(base))
+    assert.equal(match.score, 1)
+    assert.equal(match.decision, 'same')
   })
 
   it('tolerates a changing weak signal', () => {
     const changed = structuredClone(base)
     changed.videoInput = { value: 0, weight: 4 }
     const match = compareSignatures(base, changed)
-    expect(match.score).toBeCloseTo(0.95)
-    expect(match.decision).toBe('likely-same')
+    assert.equal(match.score, 0.95)
+    assert.equal(match.decision, 'likely-same')
   })
 
   it('rejects differences in strong signals', () => {
     const changed = structuredClone(base)
     changed.audioHash = { value: 'audio-b', weight: 25 }
     changed.canvasHash = { value: 'canvas-b', weight: 25 }
-    expect(compareSignatures(base, changed).decision).toBe('different')
+    assert.equal(compareSignatures(base, changed).decision, 'different')
   })
 
   it('reports insufficient comparable data', () => {
-    const sparse: Signature = { videoInput: { value: 1, weight: 4 } }
-    expect(compareSignatures(sparse, sparse).decision).toBe('insufficient-data')
+    const sparse = { videoInput: { value: 1, weight: 4 } }
+    assert.equal(compareSignatures(sparse, sparse).decision, 'insufficient-data')
   })
 })
